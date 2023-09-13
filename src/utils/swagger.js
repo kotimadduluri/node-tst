@@ -11,6 +11,16 @@ const config = {
       title: "REST API Docs",
       version:"1.0.0",
     },
+    servers: [
+      {
+        url: 'http://localhost:3000',
+        description: 'Development server',
+      },
+      {
+        url: 'http://localhost:3000',
+        description: 'Test server',
+      }
+    ],
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -20,13 +30,12 @@ const config = {
         },
       },
     },
-    security: [
-      {
-        bearerAuth: [],
-      },
+    security: [{
+      bearerAuth: []
+    },
     ],
   },
-  apis: ["./src/app.js"],
+  apis: ["./src/router/*.js"],
 };
 
 
