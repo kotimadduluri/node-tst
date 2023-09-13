@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const auth = require("../middleware/authenticator");
 const productsController = require("../controller/productsController");
 
 const route = Router();  
@@ -11,6 +12,8 @@ const route = Router();
  * /products/{productId}:
  *  get:
  *    summury: Use to get product by it id
+ *    security:
+ *      - ApiKeyAuth: [apiKey]
  *    parameters:
  *      - name: productId
  *        in: path
@@ -26,7 +29,7 @@ const route = Router();
  *        application/json:
  * 
  */
-route.get('/products/:productId',productsController.get_products_by_id);
+route.get('/products/:productId',auth,productsController.get_products_by_id);
 
 
 //to get all products
@@ -41,7 +44,7 @@ route.get('/products/:productId',productsController.get_products_by_id);
  *      '200':
  *        description: A successful response
  */
-route.get('/products',productsController.get_products);
+route.get('/products',auth,productsController.get_products);
 
 
 
@@ -56,7 +59,7 @@ route.get('/products',productsController.get_products);
  *      '201':
  *        description: Returns new product
  */
-route.post('/products',productsController.save_product);
+route.post('/products',auth,productsController.save_product);
 
 
 // Routes
@@ -78,7 +81,7 @@ route.post('/products',productsController.save_product);
  *        description: Successfully delete the product
  * 
  */
-route.put('/products/:productId',productsController.update_product);
+route.put('/products/:productId',auth,productsController.update_product);
 
 
 //to delete
@@ -102,7 +105,7 @@ route.put('/products/:productId',productsController.update_product);
  *        description: Successfully delete the product
  * 
  */
-route.delete('/products/:productId',productsController.delete_product);
+route.delete('/products/:productId',auth,productsController.delete_product);
 
 
 
