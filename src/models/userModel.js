@@ -9,15 +9,16 @@ const userSchema = mongoose.Schema(
     {
         name: {
             type: String,
-            required: true,
+            required: [true, "Name required"],
         },
         email: {
             type: String,
-            required: true,
+            unique: [true, "Provide unique email"],
+            required: [true, "Email required"],
         },
         password: {
             type: String,
-            required: true,
+            required: [true, "Password required"],
         },
     },
     {
@@ -28,7 +29,7 @@ const userSchema = mongoose.Schema(
 //hook to encrypt password before storing
 userSchema.pre('save', async function (next){
     const salt = await bcrypt.genSalt(Number(process.env.SALT));
-    this.password = await bcrypt.hash(this.password, salt);
+    this.password = bcrypt.hash(this.password, salt);
     next()
 })
 

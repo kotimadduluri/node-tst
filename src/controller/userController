@@ -7,7 +7,7 @@ const { User, validate } = require("../models/userModel");
 
 
 // get User details.
-exports.get_user = asyncHandler(async (request, response, next) => {
+exports.get_user = asyncHandler(async (request, response) => {
     try {
         const user = await User.findById(request.user._id).select("-password -__v");
         response.status(httpStatusCodes.OK).json(user);
@@ -18,14 +18,22 @@ exports.get_user = asyncHandler(async (request, response, next) => {
 });
 
 // create User details.
-exports.create_user = asyncHandler(async (request, response, next) => {
+exports.create_user = asyncHandler(async (request, response) => {
     try {
         const { error } = validate(request.body);
         if (error) return response.status(httpStatusCodes.BAD_REQUEST).send(error.details[0].message);
 
-        const user = new User(request.body);
-        await user.save();
-        response.send(user);
+
+        //check if email already exisit
+        const userProfile = await User.findOne({email:request.body.email});
+        console.log(userProfile)
+        if(userProfile){
+            response.status(httpStatusCodes.BAD_REQUEST).json({ message:"Email Id was taken."})
+        }else{
+            const user = new User(request.body);
+            await user.save();
+            response.send(user);
+        }
     } catch (error) {
         response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
     }

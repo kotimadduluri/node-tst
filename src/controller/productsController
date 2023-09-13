@@ -17,7 +17,7 @@ exports.get_products = asyncHandler(async (request, response, next) => {
             return response.status(httpStatusCodes.BAD_REQUEST).json({ errors: errors });
         }
 
-        const products = await Product.find({});
+        const products = await Product.find();
         response.status(httpStatusCodes.OK).json(products);
     } catch (error) {
         response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
