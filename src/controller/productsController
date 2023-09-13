@@ -4,8 +4,6 @@ const { validateProductRequest, validateProductId } = require("../middleware/val
 
 //models
 const Product = require('../models/productModel');
-const { request, response } = require("../router/router");
-
 
 // Display list of all products.
 exports.get_products = asyncHandler(async (request, response, next) => {
@@ -33,7 +31,9 @@ exports.get_products_by_id = asyncHandler(async (request, response, next) => {
 
         const { productId } = request.params
         const product = await Product.findById(productId);
-        response.status(200).json(product);
+        if(product){
+            response.status(200).json(product); 
+        }else response.status(400).json({ message: "No record found"})
     } catch (error) {
         response.status(500).json({ message: error.message })
     }

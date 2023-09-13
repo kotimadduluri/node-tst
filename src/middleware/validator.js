@@ -1,4 +1,6 @@
 
+const Joi = require("joi");
+
 function isEmpty(value) {
     if (!value || value == 0) {
         return false
@@ -81,4 +83,23 @@ function validateProductId(req) {
     return errors;
 }
 
-module.exports = {validateProductRequest,validateProductId}
+const validateUserProfile = (user) => {
+    console.log(user)
+    const schema = Joi.object({
+        name : Joi.string().required(),
+        email : Joi.string().email().required(),
+        password : Joi.string().required(),
+    });
+    return schema.validate(user);
+};
+
+const validateUserCredentilas = (user) => {
+    console.log(user)
+    const schema = Joi.object({
+        email : Joi.string().email().required(),
+        password : Joi.string().required(),
+    });
+    return schema.validate(user);
+};
+
+module.exports = {validateProductRequest,validateProductId,validateUserProfile,validateUserCredentilas}

@@ -23,17 +23,13 @@ const config = {
     ],
     components: {
       securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
-        },
+        ApiKeyAuth: {
+          type: "apiKey",
+          in: "header",
+          name: "x-auth-token",
+        }
       },
     },
-    security: [{
-      bearerAuth: []
-    },
-    ],
   },
   apis: ["./src/router/*.js"],
 };
