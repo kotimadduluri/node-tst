@@ -2,21 +2,25 @@ const asyncHandler = require("express-async-handler");
 const mongoose = require('mongoose');
 const { validateProductRequest, validateProductId } = require("../middleware/validator");
 
+const httpStatusCodes = require("../utils/errors");
+
 //models
 const Product = require('../models/productModel');
+
+
 
 // Display list of all products.
 exports.get_products = asyncHandler(async (request, response, next) => {
     try {
         const errors = validateProductId(request)
         if (errors.length > 0) {
-            return response.status(400).json({ errors: errors });
+            return response.status(httpStatusCodes.BAD_REQUEST).json({ errors: errors });
         }
 
         const products = await Product.find({});
-        response.status(200).json(products);
+        response.status(httpStatusCodes.OK).json(products);
     } catch (error) {
-        response.status(500).json({ message: error.message })
+        response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
     }
 
 });
@@ -26,16 +30,16 @@ exports.get_products_by_id = asyncHandler(async (request, response, next) => {
     try {
         const errors = validateProductId(request)
         if (errors.length > 0) {
-            return response.status(400).json({ errors: errors });
+            return response.status(httpStatusCodes.BAD_REQUEST).json({ errors: errors });
         }
 
         const { productId } = request.params
         const product = await Product.findById(productId);
         if(product){
-            response.status(200).json(product); 
-        }else response.status(400).json({ message: "No record found"})
+            response.status(httpStatusCodes.OK).json(product); 
+        }else response.status(httpStatusCodes.BAD_REQUEST).json({ message: "No record found"})
     } catch (error) {
-        response.status(500).json({ message: error.message })
+        response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
     }
 });
 
@@ -46,14 +50,13 @@ exports.save_product = asyncHandler(async (request, response, next) => {
 
         const errors = validateProductRequest(request)
         if (errors.length > 0) {
-            return response.status(400).json({ errors: errors });
+            return response.status(httpStatusCodes.BAD_REQUEST).json({ errors: errors });
         }
 
         const product = await Product.create(request.body)
         response.status(200).json(product)
     } catch (error) {
-        console.log(error.message)
-        response.status(500).json({ message: error.message })
+        response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
     }
 
 });
@@ -64,7 +67,7 @@ exports.update_product = asyncHandler(async (request, response, next) => {
 
         const errors = validateProductId(request)
         if (errors.length > 0) {
-            return response.status(400).json({ errors: errors });
+            return response.status(httpStatusCodes.BAD_REQUEST).json({ errors: errors });
         }
 
         const { productId } = request.params;
@@ -77,10 +80,10 @@ exports.update_product = asyncHandler(async (request, response, next) => {
 
         //if we find prosuct and update it 
         const updatedProduct = await Product.findById(productId);
-        response.status(200).json(updatedProduct);
+        response.status(httpStatusCodes.OK).json(updatedProduct);
 
     } catch (error) {
-        response.status(500).json({ message: error.message })
+        response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
     }
 });
 
@@ -92,17 +95,17 @@ exports.delete_product = asyncHandler(async (request, response, next) => {
 
         const errors = validateProductId(request)
         if (errors.length > 0) {
-            return response.status(400).json({ errors: errors });
+            return response.status(httpStatusCodes.BAD_REQUEST).json({ errors: errors });
         }
 
         const { productId } = request.params;
         const product = await Product.findByIdAndDelete(productId);
         if (!product) {
-            return response.status(404).json({ message: `cannot find any product with productId ${productId}` })
+            return response.status(httpStatusCodes.NOT_FOUND).json({ message: `cannot find any product with productId ${productId}` })
         }
-        response.status(200).json(product);
+        response.status(httpStatusCodes.NOT_FOUND).json(product);
 
     } catch (error) {
-        response.status(500).json({ message: error.message })
+        response.status(httpStatusCodes.NOT_FOUND).json({ message: error.message })
     }
 });
