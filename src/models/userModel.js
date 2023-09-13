@@ -26,10 +26,9 @@ const userSchema = mongoose.Schema(
 )
 
 //hook to encrypt password before storing
-userSchema.pre('save', async (next)=>{
+userSchema.pre('save', async function (next){
     const salt = await bcrypt.genSalt(Number(process.env.SALT));
     this.password = await bcrypt.hash(this.password, salt);
-    console.log('generated password : ',this.password)
     next()
 })
 

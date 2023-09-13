@@ -20,8 +20,12 @@ mongoDBConnector(
     app.use(bodyParser.json())
     app.use(bodyParser.urlencoded({ extended: true }))
   
-    // loading routers
-    app.use('/',logger,appRouters);
+  
+    // loading routers with loger
+    //app.use('/',logger,appRouters);
+
+    // loading routers with errors
+    app.use('/',appRouters);
   
     //swagger 
     swaggerDocs(app, port)
