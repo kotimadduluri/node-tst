@@ -5,7 +5,7 @@ Node test api server
 <img src="docs/folder_struct.png" width="380" height="720" />
 
 # Swagger documentation
-<img src="docs/swagger_list.png" width="380" height="720" />
+<img src="docs/swagger_list.png"/>
 
 
 # TechStack
