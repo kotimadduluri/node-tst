@@ -4,6 +4,9 @@ Node test api server
 # Project folder Structure
 <img src="docs/folder_struct.png" width="380" height="720" />
 
+# Swagger documentation
+<img src="docs/swagger_list.png" width="380" height="720" />
+
 
 # TechStack
 Node-tst project is built on Node.js by using following 

@@ -95,7 +95,7 @@ const validateUserProfile = (user) => {
 const validateUserCredentilas = (user) => {
     const schema = Joi.object({
         email: Joi.string().email().required(),
-        password: Joi.string().required(),
+        password: Joi.string().min(4).required(),
     });
     return schema.validate(user);
 };

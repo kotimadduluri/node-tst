@@ -50,7 +50,38 @@ const route = Router();
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     UserUpdate:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: The name of the user.         
+ *       required:
+ *         - name
+ */
+
+/**
+ * @swagger
  * /api/users:
+ *   get:
+ *     summary: Retrieve a login user details with token
+ *     tags: [Users]
+ *     responses:
+ *       '200':
+ *         description: User details will be returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ */
+
+/**
+ * @swagger
+ * /api/users/all:
  *   get:
  *     summary: Retrieve a list of users
  *     tags: [Users]
@@ -122,7 +153,7 @@ const route = Router();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             $ref: '#/components/schemas/UserUpdate'
  *     responses:
  *       '200':
  *         description: User updated successfully
@@ -152,12 +183,23 @@ const route = Router();
  *   - ApiTokenAuth: []  # This specifies that an API token is required for all endpoints
  */
 
-
+//to get active user
 route.get('/users',auth,userController.get_user);
 
-route.get('/users',auth,userController.get_user);
+//to get user with the given usre id
+route.get('/users/:{userId}',auth,userController.get_user_by_id);
 
+//to get all users
+route.get('/users/all',auth,userController.get_all_users);
+
+//to create new user
 route.post('/users',auth,userController.create_user);
+
+//to update user
+route.put('/users/:{userId}',auth,userController.update_user);
+
+//to delete user
+route.post('/users:{userId}',auth,userController.delete_user);
 
   
 module.exports = route;

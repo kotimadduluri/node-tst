@@ -64,11 +64,20 @@ const User = mongoose.model("User", userSchema);
 
 const validate = (user) => {
     const schema = Joi.object({
-        name: Joi.string().required(),
+        name: Joi.string().min(2).required(),
         email: Joi.string().email().required(),
         password: Joi.string().required(),
     });
     return schema.validate(user);
 };
 
-module.exports = { User, validate };
+const userProfileUpdateValidator = (user) => {
+    const schema = Joi.object({
+        name: Joi.string().min(2).required(),
+        email: Joi.string().max(0),
+        password: Joi.string().max(0),
+    });
+    return schema.validate(user);
+};
+
+module.exports = { User, validate , userProfileUpdateValidator };
