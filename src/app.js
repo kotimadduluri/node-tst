@@ -13,20 +13,22 @@ const appRouters = require('./router/router');
 const app = express()
 const port = process.env.PORT || 3000
 
-mongoDBConnector().then(() => {
+mongoDBConnector(
+  () => {
 
-  //set body parser
-  app.use(bodyParser.json())
-  app.use(bodyParser.urlencoded({ extended: true }))
-
-  // loading routers
-  app.use('/',logger,appRouters);
-
-  //swagger 
-  swaggerDocs(app, port)
-
-  app.listen(port, () => {
-    console.log(`node-test running at : ${process.env.PORT}.`)
-  })
-
-})
+    //set body parser
+    app.use(bodyParser.json())
+    app.use(bodyParser.urlencoded({ extended: true }))
+  
+    // loading routers
+    app.use('/',logger,appRouters);
+  
+    //swagger 
+    swaggerDocs(app, port)
+  
+    app.listen(port, () => {
+      console.log(`node-test running at : ${process.env.PORT}.`)
+    })
+  
+  }
+)
