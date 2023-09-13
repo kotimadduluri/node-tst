@@ -161,12 +161,11 @@ const route = Router();
  *   - ApiTokenAuth: []  # This specifies that an API token is required for all endpoints
  */
 
+//to get all products
+route.get('/products',auth,productsController.get_products);
 
 //to get product by id
 route.get('/products/:productId',auth,productsController.get_products_by_id);
-
-//to get all products
-route.get('/products',auth,productsController.get_products);
 
 //to create
 route.post('/products',auth,productsController.save_product);

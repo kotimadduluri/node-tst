@@ -13,13 +13,19 @@ exports.post_authenticate = asyncHandler(async (request, response) => {
         const { error } = validateUserCredentilas(request.body);
         if (error) return response.status(httpStatusCodes.BAD_REQUEST).send(error.details[0].message);
 
-        const user = await User.findOne({ email: request.body.email });
-        if (!user) return response.status(httpStatusCodes.BAD_REQUEST).json({message:"Invalid email or password"});
+
+        const user = await User.findOne({ email: request.body.email })
+        if (!user) return response.status(httpStatusCodes.INVALID).json({message:"Invalid credentials."});
+
+
+        console.log(request.body)
+        console.log(user)
 
         const validPassword = await bcrypt.compare(
             request.body.password,
             user.password
         );
+
         if (!validPassword)
             return response.status(httpStatusCodes.BAD_REQUEST).json({message:"Invalid email or password"});
 

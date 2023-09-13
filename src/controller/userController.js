@@ -20,8 +20,14 @@ exports.get_user = asyncHandler(async (request, response) => {
 // get User details.
 exports.get_user_by_id = asyncHandler(async (request, response) => {
     try {
-        const user = await User.findById(request.userId).select("-password -__v");
-        response.status(httpStatusCodes.OK).json(user);
+        console.log("get_user_by_id", request.params.userId)
+        const { userId } = request.params
+        const user = await User.findById(userId).select("-password -__v");
+        if (user) {
+            returnresponse.status(httpStatusCodes.OK).json(user);
+        } else {
+            return response.status(httpStatusCodes.INVALID).json({ message: `cannot find any user with ID ${userId}` })
+        }
     } catch (error) {
         response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
     }
@@ -73,11 +79,12 @@ exports.update_user = asyncHandler(async (request, response, next) => {
 
         const { userId } = request.params;
         const body = request.body
-        const userDetails = await User.findByIdAndUpdate(userId, body).select("-password -__v");;
+        const userDetails = await User.findByIdAndUpdate(userId, body, { new: true }).select("-password -__v");;
 
         if (!userDetails) {  //if user not present throw error response
             return response.status(httpStatusCodes.INVALID).json({ message: `cannot find any user with ID ${userId}` })
         } else {
+
             response.status(httpStatusCodes.OK).json(userDetails);
         }
 

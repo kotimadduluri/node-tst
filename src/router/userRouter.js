@@ -183,23 +183,23 @@ const route = Router();
  *   - ApiTokenAuth: []  # This specifies that an API token is required for all endpoints
  */
 
+//to get all users
+route.get('/users/all',auth,userController.get_all_users);
+
 //to get active user
 route.get('/users',auth,userController.get_user);
 
 //to get user with the given usre id
-route.get('/users/:{userId}',auth,userController.get_user_by_id);
-
-//to get all users
-route.get('/users/all',auth,userController.get_all_users);
+route.get('/users/:userId',auth,userController.get_user_by_id);
 
 //to create new user
-route.post('/users',auth,userController.create_user);
+route.post('/users',userController.create_user);
 
 //to update user
-route.put('/users/:{userId}',auth,userController.update_user);
+route.put('/users/:userId',auth,userController.update_user);
 
 //to delete user
-route.post('/users:{userId}',auth,userController.delete_user);
+route.delete('/users/:userId',auth,userController.delete_user);
 
   
 module.exports = route;

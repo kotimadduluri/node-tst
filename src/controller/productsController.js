@@ -28,16 +28,12 @@ exports.get_products = asyncHandler(async (request, response, next) => {
 // Returns product details by its ID.
 exports.get_products_by_id = asyncHandler(async (request, response, next) => {
     try {
-        const errors = validateProductId(request)
-        if (errors.length > 0) {
-            return response.status(httpStatusCodes.BAD_REQUEST).json({ errors: errors });
-        }
-
         const { productId } = request.params
+        console.log(productId)
         const product = await Product.findById(productId);
         if(product){
             response.status(httpStatusCodes.OK).json(product); 
-        }else response.status(httpStatusCodes.BAD_REQUEST).json({ message: "No record found"})
+        }else return response.status(httpStatusCodes.INVALID).json({ message: `cannot find any product with ID ${productId}` })
     } catch (error) {
         response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
     }
@@ -65,17 +61,12 @@ exports.save_product = asyncHandler(async (request, response, next) => {
 exports.update_product = asyncHandler(async (request, response, next) => {
     try {
 
-        const errors = validateProductId(request)
-        if (errors.length > 0) {
-            return response.status(httpStatusCodes.BAD_REQUEST).json({ errors: errors });
-        }
-
         const { productId } = request.params;
         const body = request.body
-        const product = await Product.findByIdAndUpdate(productId, body);
+        const product = await Product.findByIdAndUpdate(productId, body,{new: true});
 
         if (!product) {  //if product not present throw error response
-            return response.status(404).json({ message: `cannot find any product with ID ${productId}` })
+            return response.status(httpStatusCodes.INVALID).json({ message: `cannot find any product with ID ${productId}` })
         }
 
         //if we find prosuct and update it 
@@ -92,12 +83,6 @@ exports.update_product = asyncHandler(async (request, response, next) => {
 
 exports.delete_product = asyncHandler(async (request, response, next) => {
     try {
-
-        const errors = validateProductId(request)
-        if (errors.length > 0) {
-            return response.status(httpStatusCodes.BAD_REQUEST).json({ errors: errors });
-        }
-
         const { productId } = request.params;
         const product = await Product.findByIdAndDelete(productId);
         if (!product) {
