@@ -8,7 +8,7 @@ const config = {
   definition: {
     openapi: "3.1.0",
     info: {
-      title: "REST API Docs",
+      title: "Node test api",
       version:"1.0.0",
     },
     servers: [
@@ -21,15 +21,19 @@ const config = {
         description: 'Test server',
       }
     ],
-    components: {
-      securitySchemes: {
-        ApiKeyAuth: {
-          type: "apiKey",
-          in: "header",
-          name: "x-auth-token",
-        }
-      },
-    },
+    "security": [
+      {
+        "ApiTokenAuth": []
+      }
+    ],
+    "securitySchemes": {
+      "ApiTokenAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-auth-token",
+        "description": "API token for authentication"
+      }
+    }
   },
   apis: ["./src/router/*.js"],
 };
@@ -46,7 +50,7 @@ function swaggerDocs(app, port) {
     res.setHeader("Content-Type", "application/json");
     res.send(swaggerSpec);
   });
-  console.log(`Swagger Docs available at http://localhost:${port}/docs`);
+  console.log(`Api docs available at http://localhost:${port}/docs`);
 }
 
 module.exports = swaggerDocs;

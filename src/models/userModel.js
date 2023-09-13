@@ -5,6 +5,28 @@ const Joi = require("joi");
 const bcrypt = require("bcrypt");
 
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: The name of the user.
+ *         email:
+ *           type: string
+ *           description: The email address of the user (must be unique).
+ *         password:
+ *           type: string
+ *           description: The password of the user.
+ *       required:
+ *         - name
+ *         - email
+ *         - password
+ */
+
 const userSchema = mongoose.Schema(
     {
         name: {

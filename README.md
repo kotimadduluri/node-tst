@@ -8,7 +8,6 @@ Node test api server
 # TechStack
 Node-tst project is built on Node.js by using following 
 
-Node v20.6.1 : 
 [Node v20.6.1 :](https://nodejs.dev/en/about/)
 
 As an asynchronous event-driven JavaScript runtime, Node.js is designed to build scalable network applications. In the following "hello world" example, many connections can be handled concurrently. Upon each connection, the callback is fired, but if there is no work to be done, Node.js will sleep. 

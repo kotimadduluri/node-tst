@@ -2,7 +2,7 @@ const asyncHandler = require("express-async-handler");
 const mongoose = require('mongoose');
 const { validateProductRequest, validateProductId } = require("../middleware/validator");
 
-const httpStatusCodes = require("../utils/errors");
+const httpStatusCodes = require("../utils/httpCodes.js");
 
 //models
 const Product = require('../models/productModel');
@@ -54,7 +54,7 @@ exports.save_product = asyncHandler(async (request, response, next) => {
         }
 
         const product = await Product.create(request.body)
-        response.status(200).json(product)
+        response.status(httpStatusCodes.CREATED).json(product)
     } catch (error) {
         response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
     }
@@ -103,7 +103,7 @@ exports.delete_product = asyncHandler(async (request, response, next) => {
         if (!product) {
             return response.status(httpStatusCodes.NOT_FOUND).json({ message: `cannot find any product with productId ${productId}` })
         }
-        response.status(httpStatusCodes.NOT_FOUND).json(product);
+        response.status(httpStatusCodes.DELETED).json(product);
 
     } catch (error) {
         response.status(httpStatusCodes.NOT_FOUND).json({ message: error.message })

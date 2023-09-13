@@ -25,13 +25,13 @@ mongoDBConnector(
     //app.use('/',logger,appRouters);
 
     // loading routers with errors
-    app.use('/',appRouters);
+    app.use('/api',appRouters);
   
     //swagger 
     swaggerDocs(app, port)
   
     app.listen(port, () => {
-      console.log(`node-test running at : ${process.env.PORT}.`)
+      console.log(`Server running at : ${process.env.PORT}.`)
     })
   
   }

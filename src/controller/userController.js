@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const asyncHandler = require("express-async-handler");
-const httpStatusCodes = require("../utils/errors");
+const httpStatusCodes = require("../utils/httpCodes.js");
 
-const { User, validate } = require("../models/userModel");
+const { User, validate } = require("../models/userModel.js");
 
 
 
@@ -26,13 +26,12 @@ exports.create_user = asyncHandler(async (request, response) => {
 
         //check if email already exisit
         const userProfile = await User.findOne({email:request.body.email});
-        console.log(userProfile)
         if(userProfile){
             response.status(httpStatusCodes.BAD_REQUEST).json({ message:"Email Id was taken."})
         }else{
             const user = new User(request.body);
             await user.save();
-            response.send(user);
+            response.status(httpStatusCodes.CREATED).send(user);
         }
     } catch (error) {
         response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })

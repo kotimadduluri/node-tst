@@ -3,7 +3,7 @@ const asyncHandler = require("express-async-handler");
 const { User } = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const Joi = require("joi");
-const { httpStatusCodes } = require("../utils/errors");
+const httpStatusCodes = require("../utils/httpCodes.js");
 
 const { validateUserCredentilas } = require("../middleware/validator");
 
