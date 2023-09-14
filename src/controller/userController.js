@@ -3,16 +3,25 @@ const asyncHandler = require("express-async-handler");
 const httpStatusCodes = require("../utils/httpCodes.js");
 
 const { User, validate, userProfileUpdateValidator } = require("../models/userModel.js");
+const { Result } = require('express-validator');
 
 
 
 // get User details.
 exports.get_user = asyncHandler(async (request, response) => {
     try {
-        const user = await User.findById(request.user._id).select("-password -__v");
-        response.status(httpStatusCodes.OK).json(user);
+        await User.findById(request.user._id).select("-password -__v")
+            .then((result) => {
+                if (result) {
+                    response.status(httpStatusCodes.OK).json(result);
+                } else {
+                    response.status(httpStatusCodes.INVALID).json({ message: `Unable to find the details` })
+                }
+            }).catch((error) => {
+                response.status(httpStatusCodes.INVALID).json({ message: `Unable to find the details` })
+            });
     } catch (error) {
-        response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
+        response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: `Internal Error` })
     }
 
 });
@@ -20,16 +29,18 @@ exports.get_user = asyncHandler(async (request, response) => {
 // get User details.
 exports.get_user_by_id = asyncHandler(async (request, response) => {
     try {
-        console.log("get_user_by_id", request.params.userId)
         const { userId } = request.params
-        const user = await User.findById(userId).select("-password -__v");
-        if (user) {
-            returnresponse.status(httpStatusCodes.OK).json(user);
-        } else {
-            return response.status(httpStatusCodes.INVALID).json({ message: `cannot find any user with ID ${userId}` })
-        }
+        User.findById(userId).select("-password -__v").then((user) => {
+            if (user) {
+                response.status(httpStatusCodes.OK).json(user);
+            } else {
+                response.status(httpStatusCodes.INVALID).json({ message: `Cannot find any user details` })
+            }
+        }).catch((error) => {
+            response.status(httpStatusCodes.INVALID).json({ message: `Cannot find any user details` })
+        })
     } catch (error) {
-        response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
+        response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: `Internal Error` })
     }
 
 });
@@ -39,11 +50,17 @@ exports.get_user_by_id = asyncHandler(async (request, response) => {
 exports.get_all_users = asyncHandler(async (request, response) => {
     try {
         // Find all users except the logged-in user
-        const users = await User.find({ _id: { $ne: request.user._id } }).select("-password -__v");
-
-        response.status(httpStatusCodes.OK).json(users);
+        User.find({ _id: { $ne: request.user._id } }).select("-password -__v").then((users) => {
+            if (users) {
+                response.status(httpStatusCodes.OK).json(users);
+            } else {
+                response.status(httpStatusCodes.INVALID).json({ message: `No recards found.` })
+            }
+        }).catch((error) => {
+            response.status(httpStatusCodes.INVALID).json({ message: `No recards found.` })
+        })
     } catch (error) {
-        response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
+        response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: `Internal Error` })
     }
 
 });
@@ -65,7 +82,7 @@ exports.create_user = asyncHandler(async (request, response) => {
             response.status(httpStatusCodes.CREATED).send(user);
         }
     } catch (error) {
-        response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
+        response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: `Internal Error` })
     }
 
 });
@@ -79,17 +96,21 @@ exports.update_user = asyncHandler(async (request, response, next) => {
 
         const { userId } = request.params;
         const body = request.body
-        const userDetails = await User.findByIdAndUpdate(userId, body, { new: true }).select("-password -__v");;
 
-        if (!userDetails) {  //if user not present throw error response
-            return response.status(httpStatusCodes.INVALID).json({ message: `cannot find any user with ID ${userId}` })
-        } else {
-
-            response.status(httpStatusCodes.OK).json(userDetails);
-        }
-
+        await User
+            .findByIdAndUpdate(userId, body, { new: true })
+            .select("-password -__v")
+            .then((result) => {
+                if (result) {
+                    response.status(httpStatusCodes.OK).json(result);
+                } else {
+                    response.status(httpStatusCodes.INVALID).json({ message: `cannot find any user` })
+                }
+            }).catch((error) => {
+                response.status(httpStatusCodes.INVALID).json({ message: `cannot find any user` })
+            });
     } catch (error) {
-        response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
+        response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: `Internal Error` })
     }
 });
 
@@ -98,11 +119,16 @@ exports.update_user = asyncHandler(async (request, response, next) => {
 exports.delete_user = asyncHandler(async (request, response, next) => {
     try {
         const { userId } = request.params;
-        const user = await User.findByIdAndDelete(userId);
-        if (!user) {
-            return response.status(httpStatusCodes.NOT_FOUND).json({ message: `cannot find any user with userId ${userId}` })
-        }
-        response.status(httpStatusCodes.DELETED).json(user);
+        await User.findByIdAndDelete(userId)
+            .then((result) => {
+                if (result) {
+                    response.status(httpStatusCodes.DELETED).json(result);
+                } else {
+                    response.status(httpStatusCodes.NOT_FOUND).json({ message: `cannot find any user` })
+                }
+            }).catch((error) => {
+                response.status(httpStatusCodes.NOT_FOUND).json({ message: `cannot find any user` })
+            });
     } catch (error) {
         response.status(httpStatusCodes.NOT_FOUND).json({ message: error.message })
     }

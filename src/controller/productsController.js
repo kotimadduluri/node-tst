@@ -6,6 +6,7 @@ const httpStatusCodes = require("../utils/httpCodes.js");
 
 //models
 const Product = require('../models/productModel');
+const { Result } = require("express-validator");
 
 
 
@@ -17,8 +18,16 @@ exports.get_products = asyncHandler(async (request, response, next) => {
             return response.status(httpStatusCodes.BAD_REQUEST).json({ errors: errors });
         }
 
-        const products = await Product.find();
-        response.status(httpStatusCodes.OK).json(products);
+        await Product.find().select("-__v").then((result) => {
+            if (result) {
+                response.status(httpStatusCodes.OK).json(result);
+            } else {
+                response.status(httpStatusCodes.OK).json({ message: [] });
+            }
+        }).catch((error) => {
+            response.status(httpStatusCodes.BAD_REQUEST).json({ message: "Invalid data" });
+        })
+
     } catch (error) {
         response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
     }
@@ -29,11 +38,16 @@ exports.get_products = asyncHandler(async (request, response, next) => {
 exports.get_products_by_id = asyncHandler(async (request, response, next) => {
     try {
         const { productId } = request.params
-        console.log(productId)
-        const product = await Product.findById(productId);
-        if(product){
-            response.status(httpStatusCodes.OK).json(product); 
-        }else return response.status(httpStatusCodes.INVALID).json({ message: `cannot find any product with ID ${productId}` })
+        await Product.findById(productId).select("-__v")
+            .then((result) => {
+                if (result) {
+                    response.status(httpStatusCodes.OK).json(product);
+                } else {
+                    response.status(httpStatusCodes.INVALID).json({ message: `cannot find any product` })
+                }
+            }).catch((error) => {
+                response.status(httpStatusCodes.BAD_REQUEST).json({ message: "Invalid data" });
+            });
     } catch (error) {
         response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
     }
@@ -41,7 +55,6 @@ exports.get_products_by_id = asyncHandler(async (request, response, next) => {
 
 //add new product
 exports.save_product = asyncHandler(async (request, response, next) => {
-
     try {
 
         const errors = validateProductRequest(request)
@@ -49,8 +62,16 @@ exports.save_product = asyncHandler(async (request, response, next) => {
             return response.status(httpStatusCodes.BAD_REQUEST).json({ errors: errors });
         }
 
-        const product = await Product.create(request.body)
-        response.status(httpStatusCodes.CREATED).json(product)
+        await Product.create(request.body)
+            .then((result) => {
+                if (result) {
+                    response.status(httpStatusCodes.CREATED).json(result)
+                } else {
+                    response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: `Unable to add new product` })
+                }
+            }).catch((error) => {
+                response.status(httpStatusCodes.BAD_REQUEST).json({ message: "Invalid data" });
+            })
     } catch (error) {
         response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
     }
@@ -63,15 +84,18 @@ exports.update_product = asyncHandler(async (request, response, next) => {
 
         const { productId } = request.params;
         const body = request.body
-        const product = await Product.findByIdAndUpdate(productId, body,{new: true});
-
-        if (!product) {  //if product not present throw error response
-            return response.status(httpStatusCodes.INVALID).json({ message: `cannot find any product with ID ${productId}` })
-        }
 
         //if we find prosuct and update it 
-        const updatedProduct = await Product.findById(productId);
-        response.status(httpStatusCodes.OK).json(updatedProduct);
+        await Product.findByIdAndUpdate(productId, body, { new: true })
+            .then((result) => {
+                if (result) {
+                    response.status(httpStatusCodes.OK).json(result);
+                } else {
+                    response.status(httpStatusCodes.INVALID).json({ message: "Unable to update" });
+                }
+            }).catch((error) => {
+                response.status(httpStatusCodes.BAD_REQUEST).json({ message: "Invalid data" });
+            })
 
     } catch (error) {
         response.status(httpStatusCodes.INTERNAL_SERVER).json({ message: error.message })
@@ -84,12 +108,17 @@ exports.update_product = asyncHandler(async (request, response, next) => {
 exports.delete_product = asyncHandler(async (request, response, next) => {
     try {
         const { productId } = request.params;
-        const product = await Product.findByIdAndDelete(productId);
-        if (!product) {
-            return response.status(httpStatusCodes.NOT_FOUND).json({ message: `cannot find any product with productId ${productId}` })
-        }
-        response.status(httpStatusCodes.DELETED).json(product);
 
+        await Product.findByIdAndDelete(productId)
+            .then((result) => {
+                if (result) {
+                    response.status(httpStatusCodes.DELETED).json(result);
+                } else {
+                    response.status(httpStatusCodes.INVALID).json({ message: "Unable to delete" });
+                }
+            }).catch((error) => {
+                response.status(httpStatusCodes.BAD_REQUEST).json({ message: "Invalid data" });
+            })
     } catch (error) {
         response.status(httpStatusCodes.NOT_FOUND).json({ message: error.message })
     }

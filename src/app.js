@@ -22,7 +22,7 @@ mongoDBConnector(
   
   
     // loading routers with loger
-    app.use('/',logger,appRouters);
+    //app.use('/',logger,appRouters);
 
     // loading routers with errors
     app.use('/api',appRouters);
